@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>War of Castles</title>
+    <link rel="stylesheet" href="style/game-style.css" />
+  </head>
+  <body>
+    <header class="game-header">
+      <div class="castle-display player">
+        ,
+        <div class="castle-icon">🏰</div>
+        <div class="castle-info">
+          <div class="castle-label">Yours Castle</div>
+          <div class="castle-hp-text">20,000</div>
+          <div class="hp-bar-container">
+            <div class="hp-bar-fill" style="width: 100%"></div>
+          </div>
+        </div>
+      </div>
+
+      <h1>VS</h1>
+
+      <div class="castle-display enemy">
+        <div class="castle-info" style="text-align: right">
+          <div class="castle-label">Enemy Castle</div>
+          <div class="castle-hp-text">20,000</div>
+          <div class="hp-bar-container">
+            <div class="hp-bar-fill" style="width: 100%"></div>
+          </div>
+        </div>
+        <div class="castle-icon">🏯</div>
+      </div>
+    </header>
+
+    <div class="battlefield">
+      <div class="field-castle player-side"></div>
+
+      <div class="lanes-container">
+        <div class="lane"></div>
+        <div class="lane"></div>
+        <div class="lane"></div>
+      </div>
+
+      <div class="field-castle enemy-side"></div>
+    </div>
+
+    <div class="controls-panel">
+      <div class="point-box">
+        <div class="point-collector">
+          <div class="points-icon">⚡</div>
+          <div class="points-value">100</div>
+        </div>
+        <div class="points-label">+10⚡/s</div>
+      </div>
+
+      <div class="troop-cards-container">
+        <div class="header">
+          <h2>Troops</h2>
+        </div>
+        <div class="body">
+          <div class="troop-card troop-zombie">
+            <div class="card-header">
+              <div class="card-cost">
+                <span class="card-cost-icon">⚡</span>
+                <span>80</span>
+              </div>
+            </div>
+            <div class="card-visual">
+              <div class="troop-avatar">
+                <img src="assets/zombie/zombie_idle.gif" alt="" />
+              </div>
+            </div>
+            <div class="card-footer">
+              <div class="stat stat-hp">
+                <div class="stat-value">1.2k</div>
+                <div class="stat-label">HP</div>
+              </div>
+              <div class="stat stat-dmg">
+                <div class="stat-value">60</div>
+                <div class="stat-label">DMG</div>
+              </div>
+              <div class="stat stat-spd">
+                <div class="stat-value">40</div>
+                <div class="stat-label">SPD</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="troop-card troop-skeleton">
+            <div class="card-header">
+              <div class="card-cost">
+                <span class="card-cost-icon">⚡</span>
+                <span>60</span>
+              </div>
+            </div>
+            <div class="card-visual">
+              <div class="troop-avatar">
+                <img src="assets/skeleton/skeleton_idle.gif" alt="" />
+              </div>
+            </div>
+            <div class="card-footer">
+              <div class="stat stat-hp">
+                <div class="stat-value">450</div>
+                <div class="stat-label">HP</div>
+              </div>
+              <div class="stat stat-dmg">
+                <div class="stat-value">55</div>
+                <div class="stat-label">DMG</div>
+              </div>
+              <div class="stat stat-spd">
+                <div class="stat-value">90</div>
+                <div class="stat-label">SPD</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="troop-card troop-golem">
+            <div class="card-header">
+              <div class="card-cost">
+                <span class="card-cost-icon">⚡</span>
+                <span>150</span>
+              </div>
+            </div>
+            <div class="card-visual">
+              <div class="troop-avatar">
+                <img src="assets/golem/golem_walk.gif" alt="" />
+              </div>
+            </div>
+            <div class="card-footer">
+              <div class="stat stat-hp">
+                <div class="stat-value">2.5k</div>
+                <div class="stat-label">HP</div>
+              </div>
+              <div class="stat stat-dmg">
+                <div class="stat-value">120</div>
+                <div class="stat-label">DMG</div>
+              </div>
+              <div class="stat stat-spd">
+                <div class="stat-value">20</div>
+                <div class="stat-label">SPD</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="troop-card troop-vampire">
+            <div class="card-header">
+              <div class="card-cost">
+                <span class="card-cost-icon">⚡</span>
+                <span>140</span>
+              </div>
+            </div>
+            <div class="card-visual">
+              <div class="troop-avatar">
+                <img src="assets/vampire/vampire_walk.gif" alt="" />
+              </div>
+            </div>
+            <div class="card-footer">
+              <div class="stat stat-hp">
+                <div class="stat-value">850</div>
+                <div class="stat-label">HP</div>
+              </div>
+              <div class="stat stat-dmg">
+                <div class="stat-value">130</div>
+                <div class="stat-label">DMG</div>
+              </div>
+              <div class="stat stat-spd">
+                <div class="stat-value">85</div>
+                <div class="stat-label">SPD</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="troop-card troop-machine">
+            <div class="card-header">
+              <div class="card-cost">
+                <span class="card-cost-icon">⚡</span>
+                <span>120</span>
+              </div>
+            </div>
+            <div class="card-visual">
+              <div class="troop-avatar">
+                <img src="assets/machine/machine_walk.gif" alt="" />
+              </div>
+            </div>
+            <div class="card-footer">
+              <div class="stat stat-hp">
+                <div class="stat-value">1k</div>
+                <div class="stat-label">HP</div>
+              </div>
+              <div class="stat stat-dmg">
+                <div class="stat-value">110</div>
+                <div class="stat-label">DMG</div>
+              </div>
+              <div class="stat stat-spd">
+                <div class="stat-value">65</div>
+                <div class="stat-label">SPD</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script src="script/game-script.js"></script>
+  </body>
+</html>

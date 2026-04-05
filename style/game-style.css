@@ -1,0 +1,698 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --bg-dark: #0a0a0f;
+  --bg-panel: #151520;
+  --bg-lane: #1a1a2e;
+  --accent-gold: #ffd700;
+  --accent-red: #ff2a6d;
+  --accent-blue: #05d9e8;
+  --accent-green: #00ff9f;
+  --text-primary: #ffffff;
+  --text-secondary: #a0a0b0;
+  --border-color: #2a2a3e;
+}
+
+body {
+  font-family: "Inter", sans-serif;
+  background: var(--bg-dark);
+  color: var(--text-primary);
+  height: 100vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  /* background-image:
+          radial-gradient(
+            circle at 20% 50%,
+            rgba(255, 42, 109, 0.15) 0%,
+            transparent 50%
+          ),
+          radial-gradient(
+            circle at 80% 50%,
+            rgba(5, 217, 232, 0.15) 0%,
+            transparent 50%
+          ); */
+  background: linear-gradient(to bottom, #94e5df, #558d1a);
+}
+
+.game-header {
+  height: 120px;
+  /* background: linear-gradient(
+          180deg,
+          var(--bg-panel) 0%,
+          rgba(21, 21, 32, 0.95) 100%
+        ); */
+  /* border-bottom: 2px solid var(--border-color); */
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 40px;
+  position: relative;
+  /* box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5); */
+}
+
+.game-header::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--accent-gold),
+    transparent
+  );
+}
+
+.castle-display {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 15px 25px;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 16px;
+  border: 2px solid;
+  min-width: 280px;
+  position: relative;
+  overflow: hidden;
+}
+
+.castle-display.player {
+  border-color: var(--accent-green);
+  box-shadow:
+    0 0 30px rgba(0, 255, 159, 0.1),
+    inset 0 0 20px rgba(0, 255, 159, 0.05);
+}
+
+.castle-display.enemy {
+  border-color: var(--accent-red);
+  box-shadow:
+    0 0 30px rgba(255, 42, 109, 0.1),
+    inset 0 0 20px rgba(255, 42, 109, 0.05);
+}
+
+.castle-icon {
+  width: 70px;
+  height: 70px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 36px;
+  position: relative;
+}
+
+.castle-display.player .castle-icon {
+  background: linear-gradient(
+    135deg,
+    rgba(0, 255, 159, 0.2),
+    rgba(0, 255, 159, 0.05)
+  );
+  border: 2px solid var(--accent-green);
+}
+
+.castle-display.enemy .castle-icon {
+  background: linear-gradient(
+    135deg,
+    rgba(255, 42, 109, 0.2),
+    rgba(255, 42, 109, 0.05)
+  );
+  border: 2px solid var(--accent-red);
+}
+
+.castle-info {
+  flex: 1;
+}
+
+.castle-label {
+  font-family: "Cinzel", serif;
+  font-size: 11px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  /* color: var(--text-secondary); */
+  color: white;
+  /* margin-bottom: 6px; */
+}
+
+.castle-hp-text {
+  font-family: "Cinzel", serif;
+  font-size: 28px;
+  font-weight: 900;
+  letter-spacing: 1px;
+  padding: 0 5px;
+}
+
+.castle-display.player .castle-hp-text {
+  color: var(--accent-green);
+  text-shadow: 0 0 20px rgba(0, 255, 159, 0.4);
+}
+
+.castle-display.enemy .castle-hp-text {
+  color: var(--accent-red);
+  text-shadow: 0 0 20px rgba(255, 42, 109, 0.4);
+}
+
+.hp-bar-container {
+  margin-top: 5px;
+  height: 8px;
+  background: rgba(0, 0, 0, 0.5);
+  border-radius: 4px;
+  overflow: hidden;
+  position: relative;
+}
+
+.hp-bar-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.hp-bar-fill::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.3),
+    transparent
+  );
+  animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.castle-display.player .hp-bar-fill {
+  background: linear-gradient(90deg, #00cc7a, var(--accent-green));
+}
+
+.castle-display.enemy .hp-bar-fill {
+  background: linear-gradient(90deg, #cc2255, var(--accent-red));
+}
+
+.battlefield {
+  /* flex: 1; */
+  height: 70%;
+  /* margin: 20px 40px; */
+  /* background: var(--bg-lane); */
+  /* border-radius: 24px; */
+  /* border: 2px solid var(--border-color); */
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  /* box-shadow:
+          inset 0 0 100px rgba(0, 0, 0, 0.5),
+          0 0 40px rgba(0, 0, 0, 0.3); */
+  background: url(../assets/map/map1.png);
+  background-size: contain;
+  background-position: bottom;
+  background-repeat: no-repeat;
+}
+
+.battlefield::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+  background-size: 50px 50px;
+  pointer-events: none;
+}
+.field-castle {
+  width: 15%; /* Reduced from 22% to give lanes more horizontal room */
+  height: 100%;
+  position: relative;
+  z-index: 5; /* Lower than the lanes-container z-index */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.field-castle.player-side {
+  background: linear-gradient(90deg, rgba(0, 255, 159, 0.1), transparent);
+}
+
+.field-castle.enemy-side {
+  background: linear-gradient(-90deg, rgba(255, 42, 109, 0.1), transparent);
+}
+
+.castle-structure {
+  width: 80px;
+  height: 200px;
+  border-radius: 10px 10px 0 0;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  padding-bottom: 20px;
+  font-size: 40px;
+}
+
+.field-castle.player-side .castle-structure {
+  background: linear-gradient(
+    180deg,
+    rgba(0, 255, 159, 0.2),
+    rgba(0, 255, 159, 0.05)
+  );
+  border: 2px solid var(--accent-green);
+  box-shadow: 0 0 40px rgba(0, 255, 159, 0.2);
+}
+
+.field-castle.enemy-side .castle-structure {
+  background: linear-gradient(
+    180deg,
+    rgba(255, 42, 109, 0.2),
+    rgba(255, 42, 109, 0.05)
+  );
+  border: 2px solid var(--accent-red);
+  box-shadow: 0 0 40px rgba(255, 42, 109, 0.2);
+}
+
+.castle-towers {
+  position: absolute;
+  top: -30px;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  padding: 0 10px;
+}
+
+.tower {
+  width: 20px;
+  height: 40px;
+  border-radius: 4px 4px 0 0;
+}
+
+.player-side .tower {
+  background: var(--accent-green);
+}
+
+.enemy-side .tower {
+  background: var(--accent-red);
+}
+
+.lanes-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  padding: 10px 0;
+  height: 30%; /* Your container height */
+  margin: auto 0 5% 0;
+  z-index: 20; /* Ensure container is above the background */
+}
+
+.lane {
+  flex: 1;
+  position: relative;
+  margin: 5px 15px;
+  transition: all 0.3s ease;
+  background-color: #83838337;
+  display: flex;
+  align-items: flex-end;
+}
+
+.lane:hover {
+  background-color: #5a57575c;
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+}
+/* .lane::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(
+          90deg,
+          rgba(0, 255, 159, 0.05),
+          transparent 20%,
+          transparent 80%,
+          rgba(255, 42, 109, 0.05)
+        );
+        opacity: 0;
+        transition: opacity 0.3s;
+      }
+
+      .lane:hover::before {
+        opacity: 1;
+      } */
+
+.controls-panel {
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  height: 200px;
+  background: linear-gradient(
+    0deg,
+    var(--bg-panel) 0%,
+    rgba(21, 21, 32, 0.95) 100%
+  );
+  border: 2px solid var(--border-color);
+  padding: 20px 40px;
+  display: flex;
+  align-items: center;
+  gap: 30px;
+  margin: auto;
+  border-radius: 10px 10px 0 0;
+}
+.point-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+.point-collector {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  padding: 10px 20px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  border: 2px solid var(--accent-gold);
+  font-size: 14px;
+  color: var(--accent-gold);
+  text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+}
+
+.point-collector .points-icon {
+  font-size: 24px;
+}
+
+.point-collector .points-value {
+  font-family: "Cinzel", serif;
+  font-size: 28px;
+  font-weight: 900;
+  color: var(--accent-gold);
+  text-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+}
+
+.points-label {
+  font-size: 12px;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: var(--accent-gold);
+  opacity: 0.8;
+}
+
+.controls-label {
+  font-family: "Cinzel", serif;
+  font-size: 14px;
+  letter-spacing: 3px;
+  color: var(--text-secondary);
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  transform: rotate(180deg);
+  padding: 10px;
+  border-right: 2px solid var(--border-color);
+}
+
+.troop-cards-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  justify-content: center;
+}
+
+.troop-cards-container .header {
+  display: flex;
+  margin: auto;
+  font-family: "Cinzel", serif;
+  font-size: 14px;
+  letter-spacing: 3px;
+  color: var(--text-secondary);
+}
+
+.troop-cards-container .body {
+  display: flex;
+  gap: 20px;
+}
+
+.troop-card {
+  width: 140px;
+  height: 160px;
+  background: linear-gradient(
+    145deg,
+    rgba(30, 30, 45, 0.9),
+    rgba(20, 20, 30, 0.9)
+  );
+  border: 2px solid var(--border-color);
+  border-radius: 16px;
+  position: relative;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.troop-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    135deg,
+    transparent,
+    rgba(255, 255, 255, 0.05),
+    transparent
+  );
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.troop-card:hover::before {
+  opacity: 1;
+}
+
+.troop-card:hover {
+  transform: translateY(-10px) scale(1.02);
+  border-color: var(--accent-gold);
+  box-shadow:
+    0 20px 40px rgba(0, 0, 0, 0.4),
+    0 0 30px rgba(255, 215, 0, 0.2);
+}
+
+.card-header {
+  height: 35px;
+  background: rgba(0, 0, 0, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 12px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.card-cost {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-family: "Cinzel", serif;
+  font-weight: 700;
+  color: var(--accent-gold);
+  font-size: 20px;
+  margin: auto;
+}
+
+.card-cost-icon {
+  font-size: 12px;
+}
+
+.card-spawn-time {
+  font-size: 10px;
+  color: var(--text-secondary);
+  background: rgba(255, 255, 255, 0.05);
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.card-visual {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.troop-avatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 40px;
+  position: relative;
+  border: 3px solid;
+  transition: transform 0.3s;
+  overflow: hidden;
+}
+
+.troop-card:hover .troop-avatar {
+  transform: scale(1.1);
+}
+.troop-avatar img {
+  width: 100%;
+  padding: 5px;
+  height: 100%;
+  object-fit: contain;
+}
+
+.troop-zombie .troop-avatar {
+  background: radial-gradient(
+    circle,
+    rgba(101, 163, 13, 0.3),
+    rgba(63, 98, 18, 0.1)
+  );
+  border-color: #65a30d;
+  box-shadow: 0 0 20px rgba(101, 163, 13, 0.3);
+}
+
+.troop-skeleton .troop-avatar {
+  background: radial-gradient(
+    circle,
+    rgba(229, 231, 235, 0.3),
+    rgba(156, 163, 175, 0.1)
+  );
+  border-color: #e5e7eb;
+  box-shadow: 0 0 20px rgba(229, 231, 235, 0.3);
+}
+
+.troop-golem .troop-avatar {
+  background: radial-gradient(
+    circle,
+    rgba(87, 83, 78, 0.3),
+    rgba(41, 37, 36, 0.1)
+  );
+  border-color: #93887b;
+  box-shadow: 0 0 20px rgba(87, 83, 78, 0.3);
+}
+
+.troop-vampire .troop-avatar {
+  background: radial-gradient(
+    circle,
+    rgba(127, 29, 29, 0.3),
+    rgba(69, 10, 10, 0.1)
+  );
+  border-color: #7f1d1d;
+  box-shadow: 0 0 20px rgba(127, 29, 29, 0.3);
+}
+
+.troop-machine .troop-avatar {
+  background: radial-gradient(
+    circle,
+    rgba(3, 105, 161, 0.3),
+    rgba(12, 74, 110, 0.1)
+  );
+  border-color: #0369a1;
+  box-shadow: 0 0 20px rgba(3, 105, 161, 0.3);
+}
+
+.card-footer {
+  height: 45px;
+  background: rgba(0, 0, 0, 0.4);
+  border-top: 1px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  padding: 0 10px;
+}
+
+.stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.stat-value {
+  font-family: "Cinzel", serif;
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--text-primary);
+}
+
+.stat-label {
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text-secondary);
+}
+
+.stat-hp .stat-value {
+  color: #ff6b6b;
+}
+.stat-dmg .stat-value {
+  color: #ffd93d;
+}
+.stat-spd .stat-value {
+  color: #6bcf7f;
+}
+
+.troop-card.disabled {
+  opacity: 0.4;
+  filter: grayscale(100%);
+  cursor: not-allowed;
+}
+
+.troop-card.disabled:hover {
+  transform: none;
+  border-color: var(--border-color);
+  box-shadow: none;
+}
+
+@media (max-width: 1400px) {
+  .troop-card {
+    width: 120px;
+    height: 140px;
+  }
+  .troop-avatar {
+    width: 60px;
+    height: 60px;
+    font-size: 30px;
+  }
+}
+
+.battle-troop {
+  position: absolute;
+  bottom: 5px;
+  width: 70px;
+  pointer-events: none;
+}
+
+/* Flips player troops to face right, assuming original assets face left */
+/* If your assets already face right, apply this to .enemy-troop instead */
+.player-troop {
+  transform: scaleX(-1);
+}
+
+.battle-troop {
+  position: absolute;
+  bottom: 0;
+  width: 80px; /* Slightly larger for visibility */
+  height: auto;
+  z-index: 100; /* High z-index so they stay above lane effects */
+  pointer-events: none;
+  image-rendering: pixelated; /* Optional: keeps pixel art sharp */
+}

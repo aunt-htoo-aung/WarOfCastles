@@ -1,0 +1,118 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Inter", sans-serif;
+}
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  margin: 0;
+  background: url("../assets/landing_bg.webp") no-repeat center center fixed;
+}
+
+.main-content {
+  width: 80%;
+  background: rgba(255, 255, 255, 0.2);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(5px);
+  min-height: 650px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+.title {
+  font-size: 2.5rem;
+  font-weight: bold;
+  margin-bottom: 20px;
+  text-align: center;
+  color: white;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.carousel {
+  display: flex;
+  gap: 20px;
+  padding-bottom: 10px;
+  justify-content: space-around;
+}
+
+.nav-btn {
+  background: none;
+  border: none;
+  font-size: 60px;
+  color: white;
+  cursor: pointer;
+}
+/* .troops-container {
+  display: flex;
+  gap: 20px;
+  flex-direction: column;
+} */
+.spec-container {
+  display: flex;
+  width: 100%;
+  gap: 20px;
+  justify-content: space-around;
+}
+
+/* Ensure the container stays a consistent height */
+.troops-container {
+  display: flex;
+  gap: 20px;
+  flex-direction: column;
+  align-items: center; /* Centers the image horizontally */
+  min-height: 450px; /* Adjust this based on your tallest GIF */
+  justify-content: center;
+}
+
+/* Fix the image size */
+.troops-container img {
+  width: auto;
+  height: 300px; /* Fixed height so the UI doesn't jump */
+  max-width: 100%; /* Prevents horizontal overflow */
+  object-fit: contain; /* Keeps the GIF from stretching */
+  image-rendering: pixelated; /* Optional: keeps pixel art sharp if your GIFs are small */
+}
+
+/* Ensure the stats container doesn't shift */
+.spec-container {
+  display: flex;
+  width: 100%;
+  gap: 20px;
+  justify-content: space-around;
+  margin-top: auto; /* Pushes stats to the bottom of the container */
+}
+
+.spec-container p {
+  color: #ffffff;
+  font-size: 20px;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+  font-weight: 600;
+  padding: 10px;
+}
+
+.back-btn {
+  background: white;
+  border: none;
+  font-size: 20px;
+  color: black;
+  padding: 10px 30px;
+  border-radius: 5px;
+  cursor: pointer;
+  text-decoration: none;
+  margin-top: auto;
+  width: fit-content;
+}
+
+.currency-box {
+  position: fixed;
+  top: 10px;
+  right: 50px;
+  z-index: 1000;
+  font-size: 30px;
+  color: white;
+}
