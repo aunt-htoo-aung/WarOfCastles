@@ -52,7 +52,6 @@ const TROOPS = {
     ATTACK_SPEED: 1200,
     MOVEMENT: 85,
     LIFE_STEAL: 0.25,
-    RANGE: 15,
     COST: 140,
   },
   MACHINE: {
@@ -74,11 +73,11 @@ const TROOPS = {
 const GAME = {
   lanes: [],
   troops: [],
-  playerCastleHP: 20000,
-  enemyCastleHP: 20000,
+  playerCastleHP: 20,
+  enemyCastleHP: 20,
   maxCastleHP: 20000,
-  playerPoints: 100, // Initial player points
-  botPoints: 100, // Initial bot points
+  playerPoints: 100,
+  botPoints: 100,
   running: true,
   idCounter: 0,
 };
@@ -87,58 +86,57 @@ const GAME = {
 const laneElements = document.querySelectorAll(".lane");
 const troopCards = document.querySelectorAll(".troop-card");
 
-GAME.lanes = [...laneElements].map(() => ({
-  player: [],
-  enemy: [],
-}));
+GAME.lanes = [...laneElements].map(() => ({ player: [], enemy: [] }));
 
 initDragSystem();
-startIncomeTimer(); // Start 10 points per second timer
+startIncomeTimer();
 startBotSpawner();
 requestAnimationFrame(gameLoop);
 
 /* =====================================================
-   INCOME SYSTEM (10 points per second)
+   CORE SYSTEMS (INCOME & UI)
 ===================================================== */
 function startIncomeTimer() {
   setInterval(() => {
     if (!GAME.running) return;
-
     GAME.playerPoints += 10;
     GAME.botPoints += 10;
-
-    updateUI();
+    updateGlobalUI();
   }, 1000);
 }
 
-function updateUI() {
-  // Update point display
+function updateGlobalUI() {
   const pointDisplay = document.querySelector(".points-value");
   if (pointDisplay) pointDisplay.innerText = Math.floor(GAME.playerPoints);
 
-  // Disable/Enable cards based on cost
   troopCards.forEach((card) => {
     const type = getTroopType(card);
-    if (TROOPS[type].COST > GAME.playerPoints) {
-      card.classList.add("disabled");
-    } else {
-      card.classList.remove("disabled");
-    }
+    if (TROOPS[type].COST > GAME.playerPoints) card.classList.add("disabled");
+    else card.classList.remove("disabled");
   });
 }
 
+function updateTroopVisuals(troop, newState) {
+  troop.state = newState;
+  // Dynamic class name: e.g., "zombie player-troop attack"
+  troop.container.className = `${troop.type.toLowerCase()} ${troop.side}-troop ${newState}`;
+
+  // Update Health Bar Width
+  const hpPercent = Math.max(0, (troop.hp / troop.maxHp) * 100);
+  troop.hpBarFill.style.width = hpPercent + "%";
+}
+
 /* =====================================================
-   DRAG & DROP SYSTEM
+   DRAG & DROP
 ===================================================== */
 function initDragSystem() {
   troopCards.forEach((card) => {
     const img = card.querySelector("img");
     const troopType = getTroopType(card);
-
     img.draggable = true;
-    img.addEventListener("dragstart", (e) => {
-      e.dataTransfer.setData("troopType", troopType);
-    });
+    img.addEventListener("dragstart", (e) =>
+      e.dataTransfer.setData("troopType", troopType),
+    );
   });
 
   laneElements.forEach((lane, laneIndex) => {
@@ -146,12 +144,9 @@ function initDragSystem() {
     lane.addEventListener("drop", (e) => {
       e.preventDefault();
       const type = e.dataTransfer.getData("troopType");
-      if (!type) return;
-
-      // Deduct points on deployment
-      if (GAME.playerPoints >= TROOPS[type].COST) {
+      if (type && GAME.playerPoints >= TROOPS[type].COST) {
         GAME.playerPoints -= TROOPS[type].COST;
-        updateUI();
+        updateGlobalUI();
         spawnTroop(type, laneIndex, "player");
       }
     });
@@ -165,11 +160,25 @@ function spawnTroop(type, laneIndex, side) {
   const data = TROOPS[type];
   const lane = laneElements[laneIndex];
 
-  const troopEl = document.createElement("img");
-  troopEl.className = `battle-troop ${side}-troop`;
-  troopEl.src = data.SPAWN;
+  // Container
+  const container = document.createElement("div");
+  container.className = `${type.toLowerCase()} ${side}-troop spawn`;
 
-  lane.appendChild(troopEl);
+  // Health Bar
+  const hpContainer = document.createElement("div");
+  hpContainer.className = "troop-hp-bar-container";
+  const hpFill = document.createElement("div");
+  hpFill.className = "troop-hp-bar-fill";
+  hpContainer.appendChild(hpFill);
+
+  // Image
+  const img = document.createElement("img");
+  img.className = "battle-troop-img";
+  img.src = data.SPAWN;
+
+  container.appendChild(hpContainer);
+  container.appendChild(img);
+  lane.appendChild(container);
 
   const startPos = side === "player" ? 10 : lane.offsetWidth - 70;
 
@@ -178,48 +187,48 @@ function spawnTroop(type, laneIndex, side) {
     type,
     lane: laneIndex,
     side,
+    maxHp: data.HP,
     hp: data.HP,
     damage: data.DAMAGE,
     speed: data.MOVEMENT / 100,
     attackSpeed: data.ATTACK_SPEED,
-    element: troopEl,
+    container: container,
+    element: img,
+    hpBarFill: hpFill,
     position: startPos,
     state: "spawn",
     lastAttack: 0,
   };
 
-  troopEl.style.left = troop.position + "px";
+  container.style.left = startPos + "px";
   GAME.troops.push(troop);
 
   setTimeout(() => {
     if (troop.state === "dead") return;
-    troop.state = "walk";
-    troopEl.src = data.WALK;
+    img.src = data.WALK;
+    updateTroopVisuals(troop, "walk");
   }, data.SPAWN_TIME);
 }
 
 /* =====================================================
-   BOT AI & SPAWNER
+   BOT AI
 ===================================================== */
 function startBotSpawner() {
   setInterval(() => {
     if (!GAME.running) return;
+    const types = Object.keys(TROOPS);
+    const type = types[Math.floor(Math.random() * types.length)];
+    const lane = Math.floor(Math.random() * 3);
 
-    const troopNames = Object.keys(TROOPS);
-    const randomTroop =
-      troopNames[Math.floor(Math.random() * troopNames.length)];
-    const randomLane = Math.floor(Math.random() * 3);
-
-    // Bot also checks points before spawning
-    if (GAME.botPoints >= TROOPS[randomTroop].COST) {
-      GAME.botPoints -= TROOPS[randomTroop].COST;
-      spawnTroop(randomTroop, randomLane, "enemy");
+    if (GAME.botPoints >= TROOPS[type].COST) {
+      GAME.botPoints -= TROOPS[type].COST;
+      spawnTroop(type, lane, "enemy");
     }
-  }, 2000); // Check every 2 seconds
+  }, 3500);
 }
 
 /* =====================================================
-   MAIN GAME LOOP
+   GAME LOOP & LOGIC
 ===================================================== */
 function gameLoop(timestamp) {
   if (!GAME.running) return;
@@ -227,151 +236,139 @@ function gameLoop(timestamp) {
   requestAnimationFrame(gameLoop);
 }
 
-/* =====================================================
-   TROOP UPDATE
-===================================================== */
 function updateTroops(time) {
   GAME.troops.forEach((troop) => {
     if (troop.state === "spawn" || troop.state === "dead") return;
 
     const laneWidth = laneElements[troop.lane].offsetWidth;
-    const enemy = findEnemyInLane(troop);
+    const enemy = findEnemy(troop);
 
     if (enemy) {
-      attack(troop, enemy, time);
-      return;
+      handleCombat(troop, enemy, time);
+    } else {
+      moveTroop(troop, laneWidth);
     }
 
-    moveTroop(troop);
-
-    if (troop.side === "player" && troop.position > laneWidth - 80) {
-      damageCastle("enemy", troop.damage);
-      destroyTroop(troop);
-    } else if (troop.side === "enemy" && troop.position < 10) {
-      damageCastle("player", troop.damage);
-      destroyTroop(troop);
-    }
-
-    troop.element.style.left = troop.position + "px";
+    troop.container.style.left = troop.position + "px";
   });
 }
 
-/* =====================================================
-   MOVEMENT
-===================================================== */
-function moveTroop(troop) {
+function moveTroop(troop, laneWidth) {
   if (troop.state !== "walk") {
-    troop.state = "walk";
+    updateTroopVisuals(troop, "walk");
     troop.element.src = TROOPS[troop.type].WALK;
   }
 
   if (troop.side === "player") troop.position += troop.speed;
   else troop.position -= troop.speed;
+
+  // Castle Collision
+  if (troop.side === "player" && troop.position > laneWidth - 80) {
+    damageCastle("enemy", troop.damage);
+    destroyTroop(troop);
+  } else if (troop.side === "enemy" && troop.position < 10) {
+    damageCastle("player", troop.damage);
+    destroyTroop(troop);
+  }
 }
 
-/* =====================================================
-   COLLISION
-===================================================== */
-function findEnemyInLane(troop) {
+function findEnemy(troop) {
   return GAME.troops.find(
-    (other) =>
-      other.lane === troop.lane &&
-      other.side !== troop.side &&
-      other.state !== "dead" &&
-      Math.abs(other.position - troop.position) < 55,
+    (t) =>
+      t.lane === troop.lane &&
+      t.side !== troop.side &&
+      t.state !== "dead" &&
+      Math.abs(t.position - troop.position) < 55,
   );
 }
 
-/* =====================================================
-   COMBAT
-===================================================== */
-function attack(attacker, defender, time) {
+/* --- Updated Combat: Force state reset if enemy is gone --- */
+function handleCombat(attacker, defender, time) {
+  // 1. If the defender is already dead/removed, reset attacker immediately
+  if (!defender || defender.hp <= 0 || defender.state === "dead") {
+    if (attacker.state !== "walk") {
+      updateTroopVisuals(attacker, "walk");
+      attacker.element.src = TROOPS[attacker.type].WALK;
+    }
+    return;
+  }
+
+  // 2. Attack timing logic
   if (time - attacker.lastAttack < attacker.attackSpeed) return;
 
   attacker.lastAttack = time;
-  attacker.state = "attacking";
-  attacker.element.src = TROOPS[attacker.type].ATTACK;
 
-  defender.hp -= attacker.damage;
-
-  if (TROOPS[attacker.type].LIFE_STEAL) {
-    attacker.hp += attacker.damage * TROOPS[attacker.type].LIFE_STEAL;
+  // 3. Set Attacking State
+  if (attacker.state !== "attacking") {
+    updateTroopVisuals(attacker, "attacking");
+    attacker.element.src = TROOPS[attacker.type].ATTACK;
   }
 
+  // 4. Apply Damage
+  defender.hp -= attacker.damage;
+  updateTroopVisuals(defender, defender.state);
+
+  // 5. Life Steal Logic
+  if (TROOPS[attacker.type].LIFE_STEAL) {
+    attacker.hp = Math.min(
+      attacker.maxHp,
+      attacker.hp + attacker.damage * TROOPS[attacker.type].LIFE_STEAL,
+    );
+    updateTroopVisuals(attacker, attacker.state);
+  }
+
+  // 6. Check if defender died from this hit
   if (defender.hp <= 0) {
     destroyTroop(defender);
-    attacker.state = "walk";
-  }
 
-  setTimeout(() => {
-    if (attacker.state === "attacking") {
-      attacker.element.src = TROOPS[attacker.type].WALK;
-    }
-  }, 500);
+    // CRITICAL: Immediately tell the attacker to move again
+    updateTroopVisuals(attacker, "walk");
+    attacker.element.src = TROOPS[attacker.type].WALK;
+  }
 }
 
-/* =====================================================
-   DESTROY TROOP
-===================================================== */
+/* --- Updated Destroy: Ensure clean removal --- */
 function destroyTroop(troop) {
   if (troop.state === "dead") return;
-  troop.state = "dead";
+
+  updateTroopVisuals(troop, "dead");
   troop.element.src = TROOPS[troop.type].DIE;
 
+  // Clear the container from the game logic array immediately
+  // so other troops stop "seeing" it as a target
   setTimeout(() => {
-    troop.element.remove();
+    troop.container.remove();
     GAME.troops = GAME.troops.filter((t) => t.id !== troop.id);
   }, TROOPS[troop.type].DIE_TIME);
 }
 
 /* =====================================================
-   CASTLE DAMAGE & UI UPDATE
+   CASTLE & GAME OVER
 ===================================================== */
 function damageCastle(side, dmg) {
   const isEnemy = side === "enemy";
+  if (isEnemy) GAME.enemyCastleHP = Math.max(0, GAME.enemyCastleHP - dmg);
+  else GAME.playerCastleHP = Math.max(0, GAME.playerCastleHP - dmg);
 
-  if (isEnemy) {
-    GAME.enemyCastleHP = Math.max(0, GAME.enemyCastleHP - dmg);
-  } else {
-    GAME.playerCastleHP = Math.max(0, GAME.playerCastleHP - dmg);
-  }
+  const root = isEnemy ? ".enemy" : ".player";
+  const text = document.querySelector(`${root} .castle-hp-text`);
+  const bar = document.querySelector(`${root} .hp-bar-fill`);
+  const hp = isEnemy ? GAME.enemyCastleHP : GAME.playerCastleHP;
 
-  const castleClass = isEnemy ? ".enemy" : ".player";
-  const hpText = document.querySelector(`${castleClass} .castle-hp-text`);
-  const hpBarFill = document.querySelector(`${castleClass} .hp-bar-fill`);
+  if (text) text.innerText = Math.floor(hp).toLocaleString();
+  if (bar) bar.style.width = (hp / GAME.maxCastleHP) * 100 + "%";
 
-  const currentHP = isEnemy ? GAME.enemyCastleHP : GAME.playerCastleHP;
-  const percentage = (currentHP / GAME.maxCastleHP) * 100;
-
-  if (hpText) hpText.innerText = Math.floor(currentHP).toLocaleString();
-  if (hpBarFill) hpBarFill.style.width = percentage + "%";
-
-  checkGameState();
+  if (hp <= 0) endGame(isEnemy ? "VICTORY!" : "DEFEAT!");
 }
 
-/* =====================================================
-   GAME END
-===================================================== */
-function checkGameState() {
-  if (GAME.enemyCastleHP <= 0 && GAME.running) {
-    GAME.running = false;
-    setTimeout(() => alert("VICTORY!"), 100);
-  }
-
-  if (GAME.playerCastleHP <= 0 && GAME.running) {
-    GAME.running = false;
-    setTimeout(() => alert("DEFEAT!"), 100);
-  }
+function endGame(msg) {
+  if (!GAME.running) return;
+  GAME.running = false;
+  setTimeout(() => alert(msg), 200);
 }
 
-/* =====================================================
-   UTIL
-===================================================== */
 function getTroopType(card) {
-  if (card.classList.contains("troop-zombie")) return "ZOMBIE";
-  if (card.classList.contains("troop-skeleton")) return "SKELETON";
-  if (card.classList.contains("troop-golem")) return "GOLEM";
-  if (card.classList.contains("troop-vampire")) return "VAMPIRE";
-  if (card.classList.contains("troop-machine")) return "MACHINE";
-  return null;
+  const types = ["zombie", "skeleton", "golem", "vampire", "machine"];
+  const found = types.find((t) => card.classList.contains(`troop-${t}`));
+  return found ? found.toUpperCase() : null;
 }

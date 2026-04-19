@@ -696,3 +696,42 @@ body {
   pointer-events: none;
   image-rendering: pixelated; /* Optional: keeps pixel art sharp */
 }
+
+/* Container for the troop and its health bar */
+.player-troop,
+.enemy-troop {
+  position: absolute;
+  bottom: 0;
+  width: 70px; /* Match troop width */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 100;
+}
+
+/* The small HP bar above the troop */
+.troop-hp-bar-container {
+  width: 40px;
+  height: 4px;
+  background: rgba(0, 0, 0, 0.5);
+  border-radius: 2px;
+  margin-bottom: 2px;
+  overflow: hidden;
+}
+
+.troop-hp-bar-fill {
+  width: 100%;
+  height: 100%;
+  background: #00ff9f; /* Green for health */
+  transition: width 0.2s ease;
+}
+
+/* Enemy troops might have red bars */
+.enemy-troop .troop-hp-bar-fill {
+  background: #ff2a6d;
+}
+
+.battle-troop-img {
+  width: 100%;
+  height: auto;
+}
