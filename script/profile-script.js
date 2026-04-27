@@ -15,41 +15,66 @@ const randomNames = [
   "NightBlade",
 ];
 
+let currentIndex = 0;
+let activeAvatar = avatarData[0].url;
+
+let localData = JSON.parse(localStorage.getItem("data")) || null;
+
 document.addEventListener("DOMContentLoaded", () => {
   const avatarContainer = document.querySelector(".avatars");
   const nameInput = document.getElementById("name");
   const previewName = document.querySelector(".preview-name");
   const avatarCircle = document.querySelector(".avatar-circle");
+
   const navBtns = document.querySelectorAll(".nav-btn");
   const randomBtn = document.querySelector(".random-btn");
   const saveBtn = document.querySelector(".save-btn");
 
-  saveBtn.addEventListener("click", () => {
-    const finalName = nameInput.value.trim();
+  if (localData) {
+    nameInput.value = localData.name;
+    previewName.textContent = localData.name;
 
-    if (!finalName) {
+    activeAvatar = localData.avatar;
+
+    // set currentIndex based on saved avatar
+    const foundIndex = avatarData.findIndex((a) => a.url === localData.avatar);
+    if (foundIndex !== -1) currentIndex = foundIndex;
+
+    avatarCircle.innerHTML = `
+      <img src="${localData.avatar}"
+      style="width:100%; height:100%; border-radius:50%; object-fit:cover;">
+    `;
+  }
+
+  saveBtn.addEventListener("click", () => {
+    const profileName = nameInput.value.trim();
+
+    if (!profileName) {
       alert("Please enter a name for your warrior!");
       return;
     }
 
-    const activeBox = avatarContainer.children[1];
-    const activeImg = activeBox.querySelector("img").src;
+    let data = JSON.parse(localStorage.getItem("data"));
 
-    const profile = {
-      name: finalName,
-      avatar: activeImg,
-      coins: 1000,
-      createdAt: new Date().toLocaleString(),
-    };
+    if (data) {
+      data.name = profileName;
+      data.avatar = activeAvatar;
+    } else {
+      data = {
+        name: profileName,
+        avatar: activeAvatar,
+        coins: 10000,
+        createdAt: new Date().toLocaleString(),
+      };
+    }
 
-    // Save to LocalStorage
-    localStorage.setItem("data", JSON.stringify(profile));
+    localStorage.setItem("data", JSON.stringify(data));
+
+    console.log("Saved Data:", data);
 
     window.location.href = "./landing.html";
-    console.log("Saved Data:", profile);
   });
 
-  //random profile name and avatar
   randomBtn.addEventListener("click", () => {
     const randomIndex = Math.floor(Math.random() * randomNames.length);
     const selectedName = randomNames[randomIndex];
@@ -57,8 +82,7 @@ document.addEventListener("DOMContentLoaded", () => {
     nameInput.value = selectedName;
     previewName.textContent = selectedName;
 
-    // Spin effect
-    const spins = Math.floor(Math.random() * 10) + 5;
+    const spins = Math.floor(Math.random() * 8) + 5;
     let count = 0;
 
     const spinInterval = setInterval(() => {
@@ -69,47 +93,59 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   function initAvatars() {
-    avatarContainer.innerHTML = "";
-    avatarData.forEach((data) => {
-      const div = document.createElement("div");
-      div.className = "avatar-box";
-      div.innerHTML = `<img src="${data.url}" alt="${data.name}" data-id="${data.id}">`;
-      avatarContainer.appendChild(div);
-    });
+    avatarContainer.innerHTML = `
+      <div class="avatar-box"></div>
+      <div class="avatar-box"></div>
+      <div class="avatar-box"></div>
+    `;
+
     updateCarousel();
   }
 
   function updateCarousel() {
     const boxes = avatarContainer.children;
 
+    const getIndex = (offset) =>
+      (currentIndex + offset + avatarData.length) % avatarData.length;
+
+    const left = avatarData[getIndex(-1)];
+    const center = avatarData[getIndex(0)];
+    const right = avatarData[getIndex(1)];
+
+    const visible = [left, center, right];
+
     for (let i = 0; i < boxes.length; i++) {
       const box = boxes[i];
+      const avatar = visible[i];
+
       box.classList.remove("large", "small");
+
+      box.innerHTML = `<img src="${avatar.url}">`;
 
       if (i === 1) {
         box.classList.add("large");
-        const activeImg = box.querySelector("img").src;
-        avatarCircle.innerHTML = `<img src="${activeImg}" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">`;
+
+        activeAvatar = avatar.url;
+
+        avatarCircle.innerHTML = `
+          <img src="${avatar.url}"
+          style="width:100%; height:100%; border-radius:50%; object-fit:cover;">
+        `;
       } else {
         box.classList.add("small");
       }
-
-      box.style.display = i < 3 ? "flex" : "none";
     }
   }
 
-  const moveNext = () => {
-    avatarContainer.appendChild(avatarContainer.firstElementChild);
+  function moveNext() {
+    currentIndex = (currentIndex + 1) % avatarData.length;
     updateCarousel();
-  };
+  }
 
-  const movePrev = () => {
-    avatarContainer.insertBefore(
-      avatarContainer.lastElementChild,
-      avatarContainer.firstElementChild,
-    );
+  function movePrev() {
+    currentIndex = (currentIndex - 1 + avatarData.length) % avatarData.length;
     updateCarousel();
-  };
+  }
 
   navBtns.forEach((btn) => {
     btn.addEventListener("click", () => {

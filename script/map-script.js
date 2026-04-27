@@ -34,7 +34,6 @@ const mapImg = document.querySelector(".map-img img");
 const priceTag = document.querySelector(".price-overlay");
 const purchaseBtn = document.querySelector(".map-container button");
 const [prevBtn, nextBtn] = document.querySelectorAll(".nav-btn");
-
 function updateDisplay() {
   const map = MAPS[currentIndex];
 
