@@ -1,4 +1,3 @@
-/* ---------------- TROOP DATA ---------------- */
 const TROOPS = {
   ZOMBIE: {
     SPAWN: "assets/zombie/zombie_spawn.gif",
@@ -69,12 +68,11 @@ const TROOPS = {
   },
 };
 
-/* ---------------- GAME STATE ---------------- */
 const GAME = {
   lanes: [],
   troops: [],
-  playerCastleHP: 20,
-  enemyCastleHP: 20,
+  playerCastleHP: 20000,
+  enemyCastleHP: 20000,
   maxCastleHP: 20000,
   playerPoints: 100,
   botPoints: 100,
@@ -82,7 +80,6 @@ const GAME = {
   idCounter: 0,
 };
 
-/* ---------------- INIT ---------------- */
 const laneElements = document.querySelectorAll(".lane");
 const troopCards = document.querySelectorAll(".troop-card");
 
@@ -93,9 +90,6 @@ startIncomeTimer();
 startBotSpawner();
 requestAnimationFrame(gameLoop);
 
-/* =====================================================
-   CORE SYSTEMS (INCOME & UI)
-===================================================== */
 function startIncomeTimer() {
   setInterval(() => {
     if (!GAME.running) return;
@@ -118,17 +112,11 @@ function updateGlobalUI() {
 
 function updateTroopVisuals(troop, newState) {
   troop.state = newState;
-  // Dynamic class name: e.g., "zombie player-troop attack"
   troop.container.className = `${troop.type.toLowerCase()} ${troop.side}-troop ${newState}`;
-
-  // Update Health Bar Width
   const hpPercent = Math.max(0, (troop.hp / troop.maxHp) * 100);
   troop.hpBarFill.style.width = hpPercent + "%";
 }
 
-/* =====================================================
-   DRAG & DROP
-===================================================== */
 function initDragSystem() {
   troopCards.forEach((card) => {
     const img = card.querySelector("img");
@@ -153,25 +141,19 @@ function initDragSystem() {
   });
 }
 
-/* =====================================================
-   SPAWN TROOP
-===================================================== */
 function spawnTroop(type, laneIndex, side) {
   const data = TROOPS[type];
   const lane = laneElements[laneIndex];
 
-  // Container
   const container = document.createElement("div");
   container.className = `${type.toLowerCase()} ${side}-troop spawn`;
 
-  // Health Bar
   const hpContainer = document.createElement("div");
   hpContainer.className = "troop-hp-bar-container";
   const hpFill = document.createElement("div");
   hpFill.className = "troop-hp-bar-fill";
   hpContainer.appendChild(hpFill);
 
-  // Image
   const img = document.createElement("img");
   img.className = "battle-troop-img";
   img.src = data.SPAWN;
@@ -210,9 +192,6 @@ function spawnTroop(type, laneIndex, side) {
   }, data.SPAWN_TIME);
 }
 
-/* =====================================================
-   BOT AI
-===================================================== */
 function startBotSpawner() {
   setInterval(() => {
     if (!GAME.running) return;
@@ -227,9 +206,6 @@ function startBotSpawner() {
   }, 3500);
 }
 
-/* =====================================================
-   GAME LOOP & LOGIC
-===================================================== */
 function gameLoop(timestamp) {
   if (!GAME.running) return;
   updateTroops(timestamp);
@@ -244,32 +220,31 @@ function updateTroops(time) {
     const enemy = findEnemy(troop);
 
     if (enemy) {
-      handleCombat(troop, enemy, time);
+      handleCombat(troop, enemy, null, time);
     } else {
-      moveTroop(troop, laneWidth);
+      // Check if troop reached the castle
+      const isAtPlayerCastle = troop.side === "enemy" && troop.position < 20;
+      const isAtEnemyCastle =
+        troop.side === "player" && troop.position > laneWidth - 80;
+
+      if (isAtPlayerCastle || isAtEnemyCastle) {
+        handleCombat(troop, null, isAtPlayerCastle ? "player" : "enemy", time);
+      } else {
+        moveTroop(troop);
+      }
     }
 
     troop.container.style.left = troop.position + "px";
   });
 }
 
-function moveTroop(troop, laneWidth) {
+function moveTroop(troop) {
   if (troop.state !== "walk") {
     updateTroopVisuals(troop, "walk");
     troop.element.src = TROOPS[troop.type].WALK;
   }
-
   if (troop.side === "player") troop.position += troop.speed;
   else troop.position -= troop.speed;
-
-  // Castle Collision
-  if (troop.side === "player" && troop.position > laneWidth - 80) {
-    damageCastle("enemy", troop.damage);
-    destroyTroop(troop);
-  } else if (troop.side === "enemy" && troop.position < 10) {
-    damageCastle("player", troop.damage);
-    destroyTroop(troop);
-  }
 }
 
 function findEnemy(troop) {
@@ -282,10 +257,8 @@ function findEnemy(troop) {
   );
 }
 
-/* --- Updated Combat: Force state reset if enemy is gone --- */
-function handleCombat(attacker, defender, time) {
-  // 1. If the defender is already dead/removed, reset attacker immediately
-  if (!defender || defender.hp <= 0 || defender.state === "dead") {
+function handleCombat(attacker, defender, castleSide, time) {
+  if (!defender && !castleSide) {
     if (attacker.state !== "walk") {
       updateTroopVisuals(attacker, "walk");
       attacker.element.src = TROOPS[attacker.type].WALK;
@@ -293,58 +266,52 @@ function handleCombat(attacker, defender, time) {
     return;
   }
 
-  // 2. Attack timing logic
+  // Attack Speed Check
   if (time - attacker.lastAttack < attacker.attackSpeed) return;
-
   attacker.lastAttack = time;
 
-  // 3. Set Attacking State
+  // Set Animation
   if (attacker.state !== "attacking") {
     updateTroopVisuals(attacker, "attacking");
     attacker.element.src = TROOPS[attacker.type].ATTACK;
   }
 
-  // 4. Apply Damage
-  defender.hp -= attacker.damage;
-  updateTroopVisuals(defender, defender.state);
+  // Apply Damage
+  if (defender) {
+    defender.hp -= attacker.damage;
+    updateTroopVisuals(defender, defender.state);
 
-  // 5. Life Steal Logic
-  if (TROOPS[attacker.type].LIFE_STEAL) {
+    if (defender.hp <= 0) {
+      destroyTroop(defender);
+      updateTroopVisuals(attacker, "walk");
+      attacker.element.src = TROOPS[attacker.type].WALK;
+    }
+  } else if (castleSide) {
+    damageCastle(castleSide, attacker.damage);
+  }
+
+  // Life Steal
+  if (TROOPS[attacker.type].LIFE_STEAL && attacker.hp < attacker.maxHp) {
     attacker.hp = Math.min(
       attacker.maxHp,
       attacker.hp + attacker.damage * TROOPS[attacker.type].LIFE_STEAL,
     );
     updateTroopVisuals(attacker, attacker.state);
   }
-
-  // 6. Check if defender died from this hit
-  if (defender.hp <= 0) {
-    destroyTroop(defender);
-
-    // CRITICAL: Immediately tell the attacker to move again
-    updateTroopVisuals(attacker, "walk");
-    attacker.element.src = TROOPS[attacker.type].WALK;
-  }
 }
 
-/* --- Updated Destroy: Ensure clean removal --- */
 function destroyTroop(troop) {
   if (troop.state === "dead") return;
-
   updateTroopVisuals(troop, "dead");
   troop.element.src = TROOPS[troop.type].DIE;
 
-  // Clear the container from the game logic array immediately
-  // so other troops stop "seeing" it as a target
+  GAME.troops = GAME.troops.filter((t) => t.id !== troop.id);
+
   setTimeout(() => {
     troop.container.remove();
-    GAME.troops = GAME.troops.filter((t) => t.id !== troop.id);
   }, TROOPS[troop.type].DIE_TIME);
 }
 
-/* =====================================================
-   CASTLE & GAME OVER
-===================================================== */
 function damageCastle(side, dmg) {
   const isEnemy = side === "enemy";
   if (isEnemy) GAME.enemyCastleHP = Math.max(0, GAME.enemyCastleHP - dmg);

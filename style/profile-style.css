@@ -47,7 +47,7 @@ body {
 }
 
 .profile-preview {
-  background: rgba(255, 255, 255, 0.2);
+  background: rgb(0 0 0 / 30%);
   backdrop-filter: blur(5px);
   padding: 40px 60px;
   /* border: 1px solid var(--border-color); */
@@ -77,7 +77,7 @@ body {
 
 .creation-card {
   /* background: var(--bg-panel); */
-  background: rgba(255, 255, 255, 0.2);
+  background: rgb(0 0 0 / 30%);
   backdrop-filter: blur(5px);
   padding: 40px;
   /* border: 1px solid var(--border-color); */
@@ -107,7 +107,6 @@ input[type="text"] {
   background: white;
   border: 1px solid var(--border-color);
   padding: 12px;
-  color: var(--text-primary);
   border-radius: 4px;
   margin-bottom: 25px;
   outline: none;
@@ -174,7 +173,7 @@ input[type="text"]:focus {
 
 /* Action Button */
 .save-btn,
-.cancel-btn {
+.random-btn {
   width: 100%;
   margin-top: 30px;
   padding: 15px;
@@ -190,9 +189,9 @@ input[type="text"]:focus {
   border: 2px solid var(--accent-gold);
   color: var(--accent-gold);
 }
-.cancel-btn {
-  border: 2px solid var(--accent-red);
-  color: var(--accent-red);
+.random-btn {
+  border: 2px solid var(--accent-blue);
+  color: var(--accent-blue);
 }
 .save-btn:hover {
   background: var(--accent-gold);
