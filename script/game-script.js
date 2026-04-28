@@ -71,9 +71,9 @@ const TROOPS = {
 const GAME = {
   lanes: [],
   troops: [],
-  playerCastleHP: 20000,
-  enemyCastleHP: 20000,
-  maxCastleHP: 20000,
+  playerCastleHP: 200,
+  enemyCastleHP: 200,
+  maxCastleHP: 200,
   playerPoints: 100,
   botPoints: 100,
   running: true,
@@ -82,7 +82,8 @@ const GAME = {
 
 const laneElements = document.querySelectorAll(".lane");
 const troopCards = document.querySelectorAll(".troop-card");
-
+const castleHP = document.querySelector(".player .castle-hp-text");
+const enemyCastleHP = document.querySelector(".enemy .castle-hp-text");
 GAME.lanes = [...laneElements].map(() => ({ player: [], enemy: [] }));
 
 initDragSystem();
@@ -90,6 +91,8 @@ startIncomeTimer();
 startBotSpawner();
 requestAnimationFrame(gameLoop);
 
+castleHP.textContent = GAME.playerCastleHP.toLocaleString();
+enemyCastleHP.textContent = GAME.enemyCastleHP.toLocaleString();
 function startIncomeTimer() {
   setInterval(() => {
     if (!GAME.running) return;
@@ -156,7 +159,11 @@ function spawnTroop(type, laneIndex, side) {
 
   const img = document.createElement("img");
   img.className = "battle-troop-img";
-  img.src = data.SPAWN;
+  if (type === "MACHINE") {
+    img.src = data.WALK;
+  } else {
+    img.src = data.SPAWN;
+  }
 
   container.appendChild(hpContainer);
   container.appendChild(img);
@@ -325,17 +332,38 @@ function damageCastle(side, dmg) {
   if (text) text.innerText = Math.floor(hp).toLocaleString();
   if (bar) bar.style.width = (hp / GAME.maxCastleHP) * 100 + "%";
 
-  if (hp <= 0) endGame(isEnemy ? "VICTORY!" : "DEFEAT!");
-}
-
-function endGame(msg) {
-  if (!GAME.running) return;
-  GAME.running = false;
-  setTimeout(() => alert(msg), 200);
+  if (hp <= 0)
+    endGame(isEnemy ? "VICTORY!" : "DEFEAT!", isEnemy ? true : false);
 }
 
 function getTroopType(card) {
   const types = ["zombie", "skeleton", "golem", "vampire", "machine"];
   const found = types.find((t) => card.classList.contains(`troop-${t}`));
   return found ? found.toUpperCase() : null;
+}
+
+const resultContent = document.querySelector(".result-content");
+const resultOverlay = document.querySelector(".game-result-overlay");
+const mainMenuBtn = document.querySelector(".main-menu-btn");
+const playAgainBtn = document.querySelector(".play-again-btn");
+const coinRewardEl = document.querySelector(".coin-reward");
+let localData = JSON.parse(localStorage.getItem("data"));
+
+playAgainBtn.addEventListener("click", () => location.reload());
+mainMenuBtn.addEventListener(
+  "click",
+  () => (window.location.href = "./landing.html"),
+);
+
+function endGame(msg, isVictory) {
+  if (!GAME.running) return;
+  GAME.running = false;
+  resultOverlay.style.display = "flex";
+  resultContent.querySelector("h2").innerText = msg;
+  resultContent.querySelector("h2").className = isVictory
+    ? "result-title victory"
+    : "result-title defeat";
+  coinRewardEl.textContent = isVictory ? "+ 🪙1,000" : "+ 🪙500";
+  localData.coins += isVictory ? 1000 : 500;
+  localStorage.setItem("data", JSON.stringify(localData));
 }

@@ -1,4 +1,4 @@
-//validate localstorage profile data
+//validate localstorage profile data and r
 let localData = JSON.parse(localStorage.getItem("data"));
 !localData && (window.location.href = "./profile.html");
 

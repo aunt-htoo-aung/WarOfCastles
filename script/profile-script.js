@@ -64,6 +64,7 @@ document.addEventListener("DOMContentLoaded", () => {
         name: profileName,
         avatar: activeAvatar,
         coins: 10000,
+        defaultMap: 1,
         createdAt: new Date().toLocaleString(),
       };
     }
