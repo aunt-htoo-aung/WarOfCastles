@@ -355,7 +355,7 @@ const coinRewardEl = document.querySelector(".coin-reward");
 playAgainBtn.addEventListener("click", () => location.reload());
 mainMenuBtn.addEventListener(
   "click",
-  () => (window.location.href = "./landing.html"),
+  () => (window.location.href = "./index.html"),
 );
 
 function endGame(msg, isVictory) {

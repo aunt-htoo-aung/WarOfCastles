@@ -74,7 +74,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     console.log("Saved Data:", data);
 
-    window.location.href = "./landing.html";
+    window.location.href = "./index.html";
   });
 
   randomBtn.addEventListener("click", () => {
