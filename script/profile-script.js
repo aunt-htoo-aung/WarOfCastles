@@ -2,8 +2,8 @@ const avatarData = [
   { id: 1, name: "Skeleton", url: "assets/avatar/skeleton_avatar.png" },
   { id: 2, name: "Vampire", url: "assets/avatar/vampire_avatar.png" },
   { id: 3, name: "Golem", url: "assets/avatar/golem_avatar.png" },
-  { id: 4, name: "Wizard", url: "assets/avatar/wizard_avatar.png" },
-  { id: 5, name: "Knight", url: "assets/avatar/knight_avatar.png" },
+  { id: 4, name: "Wizard", url: "assets/avatar/wizard_avatar.jpg" },
+  { id: 5, name: "Knight", url: "assets/avatar/knight_avatar.jpg" },
 ];
 
 const randomNames = [
