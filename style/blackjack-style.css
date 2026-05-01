@@ -1,0 +1,241 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Inter", sans-serif;
+}
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  margin: 0;
+  background: url("../assets/landing_bg.webp") no-repeat center center fixed;
+  text-align: center;
+  color: white;
+}
+
+.main-content {
+  width: 80%;
+  background: rgba(255, 255, 255, 0.2);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(5px);
+  min-height: 650px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+.title {
+  font-size: 2.5rem;
+  font-weight: bold;
+  margin-bottom: 20px;
+  text-align: center;
+  color: white;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.back-btn {
+  background: white;
+  border: none;
+  font-size: 20px;
+  color: black;
+  padding: 10px 30px;
+  border-radius: 5px;
+  cursor: pointer;
+  text-decoration: none;
+  margin-top: auto;
+  width: fit-content;
+}
+
+.currency-box {
+  position: fixed;
+  top: 10px;
+  right: 50px;
+  z-index: 1000;
+  font-size: 30px;
+  color: white;
+}
+
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Specific styling for currency-box text */
+.currency-box p {
+  background: rgba(0, 0, 0, 0.6);
+  padding: 5px 15px;
+  border-radius: 20px;
+  border: 1px solid #ffd700;
+}
+
+h1 {
+  color: gold;
+  font-size: 40px;
+  letter-spacing: 3px;
+  text-shadow: 0 0 15px gold;
+  margin-bottom: 20px;
+}
+
+.table {
+  width: 40%;
+  margin: auto;
+  padding: 30px;
+  border-radius: 100px;
+  background: radial-gradient(circle, #146c43 0%, #0d4d33 80%);
+  border: 8px solid #b8860b;
+  box-shadow: 0 0 40px black inset;
+  margin-bottom: 30px;
+}
+
+.section {
+  margin: 25px 0;
+}
+
+.section h2 {
+  color: gold;
+  margin-bottom: 10px;
+}
+
+.cards {
+  min-height: 120px;
+}
+
+.card {
+  width: 75px;
+  height: 110px;
+  background: white;
+  border-radius: 10px;
+  display: inline-block;
+  margin: 8px;
+  padding: 6px;
+  position: relative;
+  font-weight: bold;
+  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.6);
+  transition: transform 0.2s ease;
+  color: black;
+}
+
+.card:hover {
+  transform: translateY(-10px);
+}
+
+.card.red {
+  color: red;
+}
+
+.top {
+  position: absolute;
+  top: 5px;
+  left: 8px;
+  font-size: 18px;
+}
+
+.bottom {
+  position: absolute;
+  bottom: 5px;
+  right: 8px;
+  transform: rotate(180deg);
+  font-size: 18px;
+}
+
+.bet-container {
+  margin-bottom: 15px;
+  height: auto;
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  flex-direction: column;
+  width: 50%;
+}
+.bet-container label {
+  font-size: 25px;
+  color: white;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+.bet-container input {
+  width: 100px;
+  height: 30px;
+  padding: 5px;
+  border-radius: 5px;
+  border: 2px solid #333;
+  text-align: center;
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.bet-container .input-box {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.bet-container .amount-box {
+  display: flex;
+  width: 100%;
+  gap: 30px;
+}
+
+.amount-box .btn {
+  background-color: white;
+  border-radius: 5px;
+  padding: 5px;
+  color: black;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+.clear-btn {
+  background-color: red;
+  color: white;
+  padding: 5px 15px;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+.victory-display {
+  font-size: 2.3rem;
+  color: #ffd700;
+  font-weight: bold;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+}
+.buttons {
+  margin-bottom: 50px;
+}
+button {
+  padding: 12px 25px;
+  margin: 10px;
+  font-size: 16px;
+  font-weight: bold;
+  border-radius: 30px;
+  border: none;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+button:nth-child(1) {
+  background: #198754;
+  color: white;
+}
+
+button:nth-child(2) {
+  background: #dc3545;
+  color: white;
+}
+
+button:hover {
+  transform: scale(1.1);
+  box-shadow: 0 0 15px gold;
+}
+button:nth-child(3) {
+  background: gold;
+  color: black;
+}
+
+#hitBtn,
+#standBtn {
+  display: none;
+}

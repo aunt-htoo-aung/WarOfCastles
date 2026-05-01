@@ -78,6 +78,7 @@ body {
   inset 4px 4px 0 #c96d1f,
   0 6px 0 #8a4b15,
   0 10px 20px rgba(0,0,0,0.6); */
+  text-align: center;
 }
 
 .btn:hover {

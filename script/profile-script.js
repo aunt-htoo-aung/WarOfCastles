@@ -63,8 +63,9 @@ document.addEventListener("DOMContentLoaded", () => {
       data = {
         name: profileName,
         avatar: activeAvatar,
-        coins: 10000,
-        defaultMap: 1,
+        coins: 1000,
+        defaultMap: 0,
+        ownedMap: [0],
         createdAt: new Date().toLocaleString(),
       };
     }

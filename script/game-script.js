@@ -71,9 +71,9 @@ const TROOPS = {
 const GAME = {
   lanes: [],
   troops: [],
-  playerCastleHP: 200,
-  enemyCastleHP: 200,
-  maxCastleHP: 200,
+  playerCastleHP: 2000,
+  enemyCastleHP: 2000,
+  maxCastleHP: 2000,
   playerPoints: 100,
   botPoints: 100,
   running: true,
@@ -90,7 +90,11 @@ initDragSystem();
 startIncomeTimer();
 startBotSpawner();
 requestAnimationFrame(gameLoop);
+let localData = JSON.parse(localStorage.getItem("data"));
 
+//set background image
+document.querySelector(".battlefield").style.backgroundImage =
+  `url("assets/map/map${localData.defaultMap + 1}.png")`;
 castleHP.textContent = GAME.playerCastleHP.toLocaleString();
 enemyCastleHP.textContent = GAME.enemyCastleHP.toLocaleString();
 function startIncomeTimer() {
@@ -347,7 +351,6 @@ const resultOverlay = document.querySelector(".game-result-overlay");
 const mainMenuBtn = document.querySelector(".main-menu-btn");
 const playAgainBtn = document.querySelector(".play-again-btn");
 const coinRewardEl = document.querySelector(".coin-reward");
-let localData = JSON.parse(localStorage.getItem("data"));
 
 playAgainBtn.addEventListener("click", () => location.reload());
 mainMenuBtn.addEventListener(
